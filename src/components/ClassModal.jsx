@@ -130,6 +130,11 @@ export default function ClassModal({
       return;
     }
 
+    if (toMin(start) === 0 && toMin(end) === 0) {
+      showValidationAlert("กรุณาเลือกเวลาเริ่มและเวลาสิ้นสุดให้ถูกต้อง");
+      return;
+    }
+
     if (toMin(end) <= toMin(start)) {
       showValidationAlert("เวลาสิ้นสุดต้องอยู่หลังเวลาเริ่ม");
       return;

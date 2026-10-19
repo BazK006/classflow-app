@@ -24,7 +24,7 @@ export const COLORS = [
 ];
 
 export const STORAGE_KEY = "schedule_app_v2";
-export const DEFAULT_START = "08:00";
-export const DEFAULT_END = "07:00";
+export const DEFAULT_START = "00:00";
+export const DEFAULT_END = "00:00";
 export const MIN_COL_PX = 64;
 export const PX_PER_MIN = 1.9;
