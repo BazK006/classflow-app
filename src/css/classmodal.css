@@ -1,0 +1,170 @@
+.modal-mobile {
+    max-width: 600px;
+}
+
+@media (max-width: 576px) {
+    .modal-mobile {
+        margin: 0.75rem;
+        max-width: none;
+    }
+
+    .modal-mobile .modal-content {
+        border-radius: 14px;
+    }
+
+    .modal-mobile .modal-header {
+        padding: 0.9rem 1rem;
+    }
+
+    .modal-mobile .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-mobile .modal-footer {
+        padding: 0.9rem 1rem;
+    }
+
+    .modal-footer-mobile {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .modal-footer-mobile>div:last-child {
+        width: 100%;
+        display: flex;
+    }
+
+    .modal-footer-mobile>div:last-child button {
+        flex: 1;
+    }
+
+    .swatch {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* ================================
+   Modal Animation - SweetAlert Style
+================================ */
+
+/* ฉากหลังค่อย ๆ ปรากฏ */
+@keyframes modalBackdropIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal เปิด: ขยายและเลื่อนขึ้นอย่างนุ่มนวล */
+@keyframes modalPopIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.94);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ฉากหลัง */
+.modal.d-block {
+    animation: modalBackdropIn 0.25s ease-out both;
+}
+
+/* กล่อง Modal */
+.modal.d-block .modal-dialog {
+    animation: modalPopIn 0.25s ease-out both;
+    transform-origin: center center;
+}
+
+/* เงาของกล่อง Modal */
+.modal.d-block .modal-content {
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(139, 92, 246, 0.18);
+}
+
+/* เคารพการตั้งค่าลด Animation ของผู้ใช้ */
+@media (prefers-reduced-motion: reduce) {
+
+    .modal.d-block,
+    .modal.d-block .modal-dialog {
+        animation: none;
+    }
+}
+
+/* ฉากหลังค่อย ๆ จางหาย */
+@keyframes modalBackdropOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+/* กล่อง Modal X ยุบและเลื่อนลงเล็กน้อย */
+@keyframes modalPopOut {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(10px) scale(0.94);
+    }
+}
+
+/* Animation ตอนปิด */
+.modal.d-block.modal-closing {
+    animation: modalBackdropOut 0.25s ease-in both;
+    pointer-events: none;
+}
+
+.modal.d-block.modal-closing .modal-dialog {
+    animation: modalPopOut 0.25s ease-in both;
+}
+
+/* เคารพการตั้งค่าลด Animation */
+@media (prefers-reduced-motion: reduce) {
+
+    .modal.d-block,
+    .modal.d-block .modal-dialog,
+    .modal.d-block.modal-closing,
+    .modal.d-block.modal-closing .modal-dialog {
+        animation: none;
+    }
+}
+
+/* ============================== */
+/* Animation ตอนเปิด Dropdown */
+/* ============================== */
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* เพิ่มเฉพาะการจางเข้ามา ไม่เปลี่ยนตำแหน่งเมนู */
+.dropdown-menu.custom-dropdown.show {
+    animation: dropdownFadeIn 0.2s ease-out both;
+}
+
+/* รองรับผู้ใช้ที่ตั้งค่าลด Animation */
+@media (prefers-reduced-motion: reduce) {
+    .dropdown-menu.custom-dropdown.show {
+        animation: none;
+    }
+}

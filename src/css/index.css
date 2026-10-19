@@ -1,0 +1,365 @@
+html,
+body,
+#root {
+  background: radial-gradient(circle at 15% 0%, #241a3a 0%, #120f1c 55%);
+  color: #ece7f7;
+  font-family: "Sarabun", sans-serif;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+.brand-font {
+  font-family: "Sarabun", sans-serif;
+}
+
+.app-header {
+  padding: 28px 0 18px;
+  border-bottom: 1px solid #3a2f56;
+  margin-bottom: 24px;
+}
+
+.app-title {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  background: linear-gradient(90deg, #d9c8ff, #b39ff0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.app-subtitle {
+  color: #a99cc9;
+  font-size: 0.95rem;
+}
+
+.panel {
+  background: #221b33;
+  border: 1px solid #3a2f56;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.btn-purple {
+  background: linear-gradient(135deg, #8b5cf6, #5b3fa8);
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.btn-purple:hover {
+  background: linear-gradient(135deg, #9b6bff, #8b5cf6);
+  color: #fff;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #8b5cf6, #5b3fa8);
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  width: 150px;
+}
+
+.btn-save:hover {
+  background: linear-gradient(135deg, #9b6bff, #8b5cf6);
+  color: #fff;
+}
+
+.btn-outline-purple {
+  border: 1px solid #8b5cf6;
+  color: #b39ff0;
+  background: transparent;
+  width: 150px;
+}
+
+.btn-outline-purple:hover {
+  background: rgba(139, 92, 246, 0.15);
+  color: #fff;
+}
+
+.btn-outline-edit {
+  border: 1px solid #facc15;
+  color: #facc15;
+  background: transparent;
+  width: 50px;
+}
+
+.btn-outline-edit:hover {
+  background: rgba(250, 204, 21, 0.15);
+  color: #fef08a;
+}
+
+.btn-outline-del {
+  border: 1px solid #ef4444;
+  color: #f87171;
+  background: transparent;
+  width: 50px;
+}
+
+.btn-outline-del:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.btn-tool {
+  border: 1px solid #3a2f56;
+  color: #a99cc9;
+  background: #2a2140;
+  font-size: 0.82rem;
+}
+
+.btn-tool:hover {
+  border-color: #8b5cf6;
+  color: #fff;
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.btn-outline-danger {
+  width: 26.4%;
+}
+
+.btn-empty-add {
+  border: 1px solid #8b5cf6;
+  background: #8b5cf6;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 18px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.btn-empty-add:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  color: #fff;
+}
+
+/* ---- Table ---- */
+
+.schedule-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid #3a2f56;
+  background: #1a1526;
+}
+
+table.schedule {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  background: #1a1526;
+}
+
+table.schedule thead th {
+  background: #2a2140;
+  color: #b39ff0;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 4px;
+  border-bottom: 1px solid #3a2f56;
+  border-right: 1px solid #3a2f56;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table.schedule thead th:first-child {
+  background: #2a2140;
+}
+
+table.schedule tbody th {
+  background: #221b33;
+  color: #ece7f7;
+  font-weight: 600;
+  padding: 10px 10px;
+  border-right: 1px solid #3a2f56;
+  border-bottom: 1px solid #3a2f56;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+table.schedule tbody td {
+  border-right: 1px solid #3a2f56;
+  border-bottom: 1px solid #3a2f56;
+  padding: 4px;
+  height: 66px;
+  vertical-align: top;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  overflow: hidden;
+}
+
+table.schedule tbody td:hover {
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.class-card {
+  height: 100%;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.class-card .subj {
+  font-weight: 700;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.class-card .meta {
+  opacity: 0.9;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.empty-cell {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4d4468;
+  font-size: 1.1rem;
+}
+
+.modal-content {
+  border-radius: 20px;
+  background: #221b33;
+  color: #ece7f7;
+  border: 1px solid #3a2f56;
+}
+
+.modal-header,
+.modal-footer {
+  border-color: #3a2f56;
+}
+
+.form-control,
+.form-select {
+  background: #1a1526;
+  border: 1px solid #3a2f56;
+  color: #ece7f7;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background: #1a1526;
+  color: #ece7f7;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+}
+
+.form-select option {
+  background: #1a1526;
+  color: #ece7f7;
+}
+
+.form-label {
+  color: #a99cc9;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.form-control::placeholder {
+  color: #d9c8ff;
+  opacity: 1;
+  font-size: 15px;
+}
+
+.time-select .form-select {
+  padding: 6px 8px;
+  text-align: center;
+  min-width: 62px;
+}
+
+.text-dim-sm {
+  color: #a99cc9;
+  font-size: 0.8rem;
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.swatch.active {
+  border-color: #fff;
+}
+
+.footer-note {
+  color: #5f5580;
+  font-size: 0.78rem;
+  text-align: center;
+  margin: 28px 0 12px;
+}
+
+.swal-purple-popup {
+  border: 1px solid #3a2f56 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+
+.swal-purple-popup .swal2-title {
+  font-family: "Sarabun", sans-serif;
+}
+
+.swal-purple-popup .swal2-html-container {
+  font-family: "Sarabun", sans-serif;
+}
+
+/* ขยายปุ่มเฉพาะหน้าจอโทรศัพท์ */
+@media (max-width: 575.98px) {
+  .modal-footer-mobile .modal-actions {
+    display: flex;
+    width: 100%;
+  }
+
+  .modal-footer-mobile .modal-actions>.btn {
+    flex: 1 1 0;
+  }
+}
+
+/* Desktop: แยกปุ่มลบลงมาอีกแถว */
+@media (min-width: 576px) {
+  .modal-footer-mobile {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .modal-footer-mobile .modal-actions {
+    order: 1;
+    margin-left: auto;
+  }
+
+  .modal-footer-mobile .modal-delete-wrap {
+    order: 2;
+    flex: 0 0 100%;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .modal-footer-mobile .modal-delete-btn {
+    width: 140px;
+  }
+}
