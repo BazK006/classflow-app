@@ -92,7 +92,7 @@ schedule-app/
 
 ```bash
 git clone <repository-url>
-cd schedule-app
+cd classflow-app
 ```
 
 แทนที่ `<repository-url>` ด้วย URL ของ Git Repository จริง และปรับชื่อโฟลเดอร์ในคำสั่ง `cd` ให้ตรงกับชื่อโฟลเดอร์ที่ได้
