@@ -18,12 +18,67 @@ export default function SummarySubject({
     return toMin(a.start) - toMin(b.start);
   });
 
-  const totalCredits = sortedClasses.reduce((total, cls) => {
-    if (cls.credits == null || cls.credits === "") {
+  const normalize = (value) =>
+    String(value ?? "")
+      .trim()
+      .toLowerCase();
+
+  const getCourseKey = (cls) => {
+    const courseCode = normalize(cls.courseCode);
+    const baseCourseCode = courseCode.replace(/-\d+$/, "");
+    const section = normalize(cls.section);
+    const subject = normalize(cls.subject);
+
+    const courseIdentity = baseCourseCode || subject || `unknown-${cls.id}`;
+
+    return `${courseIdentity}::${section}`;
+  };
+
+  const courseGroupsMap = new Map();
+
+  sortedClasses.forEach((cls) => {
+    const key = getCourseKey(cls);
+
+    const rawCredits =
+      cls.credits == null || String(cls.credits).trim() === ""
+        ? null
+        : Number(cls.credits);
+
+    const validCredits =
+      rawCredits !== null && Number.isFinite(rawCredits) && rawCredits >= 0
+        ? rawCredits
+        : null;
+
+    if (!courseGroupsMap.has(key)) {
+      courseGroupsMap.set(key, {
+        ...cls,
+        credits: validCredits,
+        sessions: [cls],
+      });
+
+      return;
+    }
+
+    const course = courseGroupsMap.get(key);
+    course.sessions.push(cls);
+
+    if (
+      validCredits !== null &&
+      (course.credits == null ||
+        (Number(course.credits) === 0 && validCredits > 0))
+    ) {
+      course.credits = validCredits;
+    }
+  });
+
+  const courseGroups = [...courseGroupsMap.values()];
+
+  const totalCredits = courseGroups.reduce((total, course) => {
+    if (course.credits == null || course.credits === "") {
       return total;
     }
 
-    const credits = Number(cls.credits);
+    const credits = Number(course.credits);
 
     return Number.isFinite(credits) && credits >= 0 ? total + credits : total;
   }, 0);
@@ -39,9 +94,20 @@ export default function SummarySubject({
   const getDayLabel = (dayKey) =>
     DAYS.find((day) => day.key === dayKey)?.label ?? dayKey ?? "—";
 
+  const getSessionColor = (session) => session.color || "#8b5cf6";
+
+  const hasDifferentColors = (sessions = []) => {
+    const colorKeys = sessions.map((session) =>
+      String(getSessionColor(session)).trim().toLowerCase(),
+    );
+
+    return new Set(colorKeys).size > 1;
+  };
+
+  const getSingleColor = (sessions = []) => getSessionColor(sessions[0] ?? {});
+
   return (
     <section className="panel summary-subject-panel p-2 mt-4 overflow-hidden">
-      
       {/* Header */}
       <div className="p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div className="mb-3">
@@ -141,7 +207,7 @@ export default function SummarySubject({
           </thead>
 
           <tbody>
-            {sortedClasses.length === 0 ? (
+            {courseGroups.length === 0 ? (
               <tr>
                 <td
                   colSpan={10}
@@ -171,172 +237,212 @@ export default function SummarySubject({
                 </td>
               </tr>
             ) : (
-              sortedClasses.map((cls) => {
-                const courseColor = cls.color || "#8b5cf6";
-                const credits = formatCredits(cls.credits);
+              courseGroups.map((course) => {
+                const sessions = course.sessions ?? [course];
+                const credits = formatCredits(course.credits);
+
+                const differentColors = hasDifferentColors(sessions);
+                const singleColor = getSingleColor(sessions);
+
+                const displayCourseCode = String(course.courseCode ?? "")
+                  .trim()
+                  .replace(/-\d+$/, "");
+
+                const cellStyle = {
+                  background: "#1a1526",
+                  color: "#ece7f7",
+                  borderColor: "#27272e",
+                  padding: "12px 14px",
+                  verticalAlign: "middle",
+                };
+
+                const sessionListStyle = {
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  width: "100%",
+                };
+
+                const sessionItemStyle = {
+                  display: "flex",
+                  alignItems: "center",
+                  height: "32px",
+                  minHeight: "32px",
+                  maxHeight: "32px",
+                  boxSizing: "border-box",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                };
 
                 return (
-                  <tr key={cls.id}>
-                    {/* สีประจำวิชา: แสดงเฉพาะสี */}
-                    <td
-                      className="text-center"
-                      style={{
-                        background: "#1a1526",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
-                      }}
-                    >
-                      <span
-                        title="สีประจำวิชา"
-                        aria-label={`สีประจำวิชา ${courseColor}`}
-                        style={{
-                          width: "18px",
-                          height: "18px",
-                          display: "inline-block",
-                          verticalAlign: "middle",
-                          backgroundColor: courseColor,
-                          border: "1px solid rgba(255,255,255,0.35)",
-                          borderRadius: "5px",
-                        }}
-                      />
+                  <tr key={getCourseKey(course)}>
+                    {/* สีประจำวิชา / สีประจำคาบ */}
+                    <td className="text-center" style={cellStyle}>
+                      {differentColors ? (
+                        <div
+                          style={{
+                            ...sessionListStyle,
+                            alignItems: "center",
+                          }}
+                        >
+                          {sessions.map((session) => {
+                            const sessionColor = getSessionColor(session);
+
+                            return (
+                              <div
+                                key={session.id}
+                                style={{
+                                  ...sessionItemStyle,
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <span
+                                  title={`${getDayLabel(session.day)}: ${sessionColor}`}
+                                  aria-label={`สีประจำคาบวัน${getDayLabel(session.day)}`}
+                                  style={{
+                                    width: "18px",
+                                    height: "18px",
+                                    display: "inline-block",
+                                    backgroundColor: sessionColor,
+                                    border: "1px solid rgba(255,255,255,0.35)",
+                                    borderRadius: "5px",
+                                    flexShrink: 0,
+                                  }}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <span
+                          title={`สีประจำวิชา: ${singleColor}`}
+                          aria-label="สีประจำวิชา"
+                          style={{
+                            width: "18px",
+                            height: "18px",
+                            display: "inline-block",
+                            backgroundColor: singleColor,
+                            border: "1px solid rgba(255,255,255,0.35)",
+                            borderRadius: "5px",
+                          }}
+                        />
+                      )}
                     </td>
 
                     {/* รหัสวิชา */}
                     <td
                       className="text-nowrap"
                       style={{
-                        background: "#1a1526",
+                        ...cellStyle,
                         color: "#b39ff0",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
                       }}
                     >
-                      {cls.courseCode || "—"}
+                      {displayCourseCode || "—"}
                     </td>
 
                     {/* ชื่อวิชา */}
                     <td
                       style={{
-                        background: "#1a1526",
-                        color: "#ece7f7",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
+                        ...cellStyle,
                         minWidth: "200px",
                         maxWidth: "320px",
                         fontWeight: 500,
                       }}
                     >
                       <div style={{ overflowWrap: "anywhere" }}>
-                        {cls.subject || "ไม่ระบุชื่อวิชา"}
+                        {course.subject || "ไม่ระบุชื่อวิชา"}
                       </div>
                     </td>
 
                     {/* กลุ่มเรียน */}
-                    <td
-                      className="text-nowrap text-center"
-                      style={{
-                        background: "#1a1526",
-                        color: "#ece7f7",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
-                      }}
-                    >
-                      {cls.section || "—"}
+                    <td className="text-nowrap text-center" style={cellStyle}>
+                      {course.section || "—"}
                     </td>
 
-                    {/* หน่วยกิต */}
-                    <td
-                      className="text-nowrap text-center"
-                      style={{
-                        background: "#1a1526",
-                        color: "#ece7f7",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
-                      }}
-                    >
+                    {/* หน่วยกิต: แสดงเพียงครั้งเดียวต่อรายวิชา */}
+                    <td className="text-nowrap text-center" style={cellStyle}>
                       {credits !== "" ? credits : "—"}
                     </td>
 
-                    {/* วัน */}
-                    <td
-                      className="text-nowrap"
-                      style={{
-                        background: "#1a1526",
-                        color: "#ece7f7",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
-                      }}
-                    >
-                      {getDayLabel(cls.day)}
+                    {/* วันเรียน: เรียงลงด้านล่าง */}
+                    <td className="text-nowrap" style={cellStyle}>
+                      <div style={sessionListStyle}>
+                        {sessions.map((session) => (
+                          <div key={session.id} style={sessionItemStyle}>
+                            {getDayLabel(session.day)}
+                          </div>
+                        ))}
+                      </div>
                     </td>
 
-                    {/* เวลาเรียน */}
-                    <td
-                      className="text-nowrap"
-                      style={{
-                        background: "#1a1526",
-                        color: "#ece7f7",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
-                      }}
-                    >
-                      {cls.start}–{cls.end} น.
+                    {/* เวลาเรียน: จับคู่ลำดับกับวันเรียน */}
+                    <td className="text-nowrap" style={cellStyle}>
+                      <div style={sessionListStyle}>
+                        {sessions.map((session) => (
+                          <div key={session.id} style={sessionItemStyle}>
+                            {session.start}–{session.end} น.
+                          </div>
+                        ))}
+                      </div>
                     </td>
 
-                    {/* ผู้สอน */}
-                    <td
-                      style={{
-                        background: "#1a1526",
-                        color: "#ece7f7",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
-                      }}
-                    >
-                      {cls.teacher || "—"}
+                    {/* ผู้สอน: แสดงตามแต่ละคาบ */}
+                    <td style={cellStyle}>
+                      <div style={sessionListStyle}>
+                        {sessions.map((session) => (
+                          <div key={session.id} style={sessionItemStyle}>
+                            {session.teacher || "—"}
+                          </div>
+                        ))}
+                      </div>
                     </td>
 
-                    {/* ห้องเรียน */}
-                    <td
-                      className="text-nowrap"
-                      style={{
-                        background: "#1a1526",
-                        color: "#ece7f7",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
-                      }}
-                    >
-                      {cls.room || "—"}
+                    {/* ห้องเรียน: แสดงตามแต่ละคาบ */}
+                    <td className="text-nowrap" style={cellStyle}>
+                      <div style={sessionListStyle}>
+                        {sessions.map((session) => (
+                          <div key={session.id} style={sessionItemStyle}>
+                            {session.room || "—"}
+                          </div>
+                        ))}
+                      </div>
                     </td>
 
-                    {/* ปุ่มจัดการ */}
-                    <td
-                      className="text-nowrap"
-                      style={{
-                        background: "#1a1526",
-                        borderColor: "#27272e",
-                        padding: "12px 14px",
-                      }}
-                    >
-                      <div className="d-flex gap-2">
-                        <button
-                          type="button"
-                          className="btn btn-outline-edit btn-sm"
-                          onClick={() => onEdit?.(cls)}
-                          aria-label={`แก้ไข ${cls.subject}`}
-                          title="แก้ไขวิชา"
-                        >
-                          <i className="bi bi-pencil"></i>
-                        </button>
+                    {/* จัดการ: แก้ไขและลบได้ทีละคาบ */}
+                    <td style={cellStyle}>
+                      <div style={sessionListStyle}>
+                        {sessions.map((session) => (
+                          <div
+                            key={session.id}
+                            className="d-flex gap-2 align-items-center"
+                            style={sessionItemStyle}
+                          >
+                            <button
+                              type="button"
+                              className="btn btn-outline-edit btn-sm"
+                              onClick={() => onEdit?.(session)}
+                              aria-label={`แก้ไขคาบ ${getDayLabel(
+                                session.day,
+                              )} ${session.subject}`}
+                              title="แก้ไขคาบเรียน"
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </button>
 
-                        <button
-                          type="button"
-                          className="btn btn-outline-del btn-sm"
-                          onClick={() => onDelete?.(cls)}
-                          aria-label={`ลบ ${cls.subject}`}
-                          title="ลบวิชา"
-                        >
-                          <i className="bi bi-trash3"></i>
-                        </button>
+                            <button
+                              type="button"
+                              className="btn btn-outline-del btn-sm"
+                              onClick={() => onDelete?.(session)}
+                              aria-label={`ลบคาบ ${getDayLabel(
+                                session.day,
+                              )} ${session.subject}`}
+                              title="ลบคาบเรียน"
+                            >
+                              <i className="bi bi-trash3"></i>
+                            </button>
+                          </div>
+                        ))}
                       </div>
                     </td>
                   </tr>
@@ -358,8 +464,11 @@ export default function SummarySubject({
             fontSize: "13px",
           }}
         >
+          {/* **ย้ำ: courseGroups.length เพื่อไม่นับคาบเรียนซ้ำ */}
           <span>
-            แสดงทั้งหมด <strong>{sortedClasses.length}</strong> วิชา
+            แสดงทั้งหมด <strong>{sortedClasses.length}</strong> คาบเรียน
+            <span className="mx-2">·</span>
+            <strong>{courseGroups.length}</strong> วิชา
           </span>
 
           <span>
