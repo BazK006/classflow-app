@@ -205,39 +205,38 @@ export function showTimeConflictAlert(conflict, newClass) {
 }
 
 export function findDuplicateClass(classes, newClass, excludeId = null) {
-  const code = String(newClass.courseCode ?? "")
-    .trim()
-    .toLowerCase();
+  const normalize = (value) =>
+    String(value ?? "")
+      .trim()
+      .toLowerCase();
 
-  const subject = String(newClass.subject ?? "")
-    .trim()
-    .toLowerCase();
+  const newCode = normalize(newClass.courseCode);
+  const newSubject = normalize(newClass.subject);
 
-  return (
-    classes.find((cls) => {
-      if (excludeId != null && String(cls.id) === String(excludeId)) {
-        return false;
-      }
-
-      const oldCode = String(cls.courseCode ?? "")
-        .trim()
-        .toLowerCase();
-
-      const oldSubject = String(cls.subject ?? "")
-        .trim()
-        .toLowerCase();
-
-      if (code && oldCode) {
-        return code === oldCode;
-      }
-
-      if (!code && !oldCode) {
-        return subject !== "" && subject === oldSubject;
-      }
-
+  return classes.find((cls) => {
+    if (excludeId != null && String(cls.id) === String(excludeId)) {
       return false;
-    }) || null
-  );
+    }
+
+    const oldCode = normalize(cls.courseCode);
+    const oldSubject = normalize(cls.subject);
+
+    const sameCourse =
+      newCode && oldCode
+        ? newCode === oldCode
+        : !newCode && !oldCode && newSubject && newSubject === oldSubject;
+
+    if (!sameCourse) {
+      return false;
+    }
+
+    const sameSchedule =
+      normalize(cls.day) === normalize(newClass.day) &&
+      normalize(cls.start) === normalize(newClass.start) &&
+      normalize(cls.end) === normalize(newClass.end);
+
+    return sameSchedule;
+  });
 }
 
 export function showDuplicateClassAlert(existing) {

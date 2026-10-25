@@ -69,6 +69,7 @@ export default function ClassModal({
   defaultDay,
   defaultStart,
   defaultEnd,
+  classes = [],
 }) {
   const [day, setDay] = useState(defaultDay || "mon");
   const [start, setStart] = useState(defaultStart || DEFAULT_START);
@@ -84,6 +85,7 @@ export default function ClassModal({
   const [color, setColor] = useState(COLORS[0]);
   const [textColor, setTextColor] = useState("#ffffff");
   const [isClosing, setIsClosing] = useState(false);
+  const [selectedExistingCourse, setSelectedExistingCourse] = useState("");
 
   useEffect(() => {
     if (show) {
@@ -123,6 +125,48 @@ export default function ClassModal({
   };
 
   if (!show) return null;
+
+  const getCourseImportKey = (cls) =>
+    [cls.courseCode, cls.subject, cls.section]
+      .map((value) =>
+        String(value ?? "")
+          .trim()
+          .toLowerCase(),
+      )
+      .join("|");
+
+  const existingCourses = [
+    ...new Map(classes.map((cls) => [getCourseImportKey(cls), cls])).entries(),
+  ].map(([key, cls]) => ({ key, cls }));
+
+  const handleImportExistingCourse = (event) => {
+    const selectedKey = event.target.value;
+
+    const selectedCourse = existingCourses.find(
+      (item) => item.key === selectedKey,
+    )?.cls;
+
+    if (!selectedCourse) {
+      setSelectedExistingCourse("");
+      return;
+    }
+
+    setCourseCode(selectedCourse.courseCode ?? "");
+    setSubject(selectedCourse.subject ?? "");
+    setSection(selectedCourse.section ?? "");
+
+    setCredits(
+      selectedCourse.credits == null ? "" : String(selectedCourse.credits),
+    );
+
+    setTeacher(selectedCourse.teacher ?? "");
+    setRoom(selectedCourse.room ?? "");
+
+    setColor(selectedCourse.color ?? color);
+    setTextColor(selectedCourse.textColor ?? textColor);
+
+    setSelectedExistingCourse("");
+  };
 
   const handleSave = () => {
     if (!subject.trim()) {
@@ -302,6 +346,53 @@ export default function ClassModal({
               </div>
             </div>
 
+            {/* ฟังก์ชัน Import คาบเดิม */}
+            <div className="mb-3">
+              <label className="form-label mb-2">
+                นำเข้าจากคาบเรียนที่มีอยู่
+              </label>
+
+              <select
+                className="form-select existing-course-select"
+                value={selectedExistingCourse}
+                onChange={handleImportExistingCourse}
+                disabled={existingCourses.length === 0}
+              >
+                <option value="">
+                  {existingCourses.length === 0
+                    ? "ยังไม่มีคาบเรียนให้เลือกในตอนนี้"
+                    : "เลือกคาบเรียนเดิมที่ต้องการใช้"}
+                </option>
+
+                {existingCourses.map(({ key, cls }) => (
+                  <option key={key} value={key}>
+                    {cls.courseCode?.trim()
+                      ? `(${cls.courseCode.trim()}) `
+                      : ""}
+                    {cls.subject || "ไม่ระบุชื่อวิชา"}
+                    {cls.section?.trim()
+                      ? ` · กลุ่ม ${cls.section.trim()}`
+                      : ""}
+                    {cls.credits != null && String(cls.credits).trim() !== ""
+                      ? ` (${cls.credits} หน่วยกิต)`
+                      : ""}
+                  </option>
+                ))}
+              </select>
+
+              <div
+                className="form-text mt-2"
+                style={{
+                  color: "#a99cc9",
+                  fontSize: "12px",
+                  lineHeight: 1.6,
+                }}
+              >
+                เลือกคาบเรียนเดิมเพื่อเติมรายละเอียดให้อัตโนมัติ
+                จากนั้นกำหนดวันและเวลาเรียนสำหรับคาบใหม่ได้ตามต้องการ
+              </div>
+            </div>
+
             {/* สีพื้นหลัง */}
             <div className="mb-2">
               <label className="form-label">สีพื้นหลัง</label>
@@ -381,8 +472,15 @@ export default function ClassModal({
               >
                 <strong>
                   {courseCode.trim() ? `(${courseCode.trim()}) ` : ""}
-                  {subject.trim() || "ชื่อวิชา"} <br></br>
-                  {section.trim() ? ` (กลุ่ม ${section.trim()})` : ""}
+                  {subject.trim() || "ชื่อวิชา"}
+                  <br />
+
+                  {[
+                    section.trim() ? `กลุ่ม ${section.trim()}` : "",
+                    credits.trim() !== "" ? `(${credits.trim()} หน่วยกิต)` : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
                 </strong>
 
                 <div className="small">

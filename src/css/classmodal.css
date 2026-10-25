@@ -44,11 +44,6 @@
     }
 }
 
-/* ================================
-   Modal Animation - SweetAlert Style
-================================ */
-
-/* ฉากหลังค่อย ๆ ปรากฏ */
 @keyframes modalBackdropIn {
     from {
         opacity: 0;
@@ -59,7 +54,6 @@
     }
 }
 
-/* Modal เปิด: ขยายและเลื่อนขึ้นอย่างนุ่มนวล */
 @keyframes modalPopIn {
     from {
         opacity: 0;
@@ -72,25 +66,21 @@
     }
 }
 
-/* ฉากหลัง */
 .modal.d-block {
     animation: modalBackdropIn 0.25s ease-out both;
 }
 
-/* กล่อง Modal */
 .modal.d-block .modal-dialog {
     animation: modalPopIn 0.25s ease-out both;
     transform-origin: center center;
 }
 
-/* เงาของกล่อง Modal */
 .modal.d-block .modal-content {
     box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.4),
         0 0 0 1px rgba(139, 92, 246, 0.18);
 }
 
-/* เคารพการตั้งค่าลด Animation ของผู้ใช้ */
 @media (prefers-reduced-motion: reduce) {
 
     .modal.d-block,
@@ -167,4 +157,32 @@
     .dropdown-menu.custom-dropdown.show {
         animation: none;
     }
+}
+
+/* ClassFlow - Existing Course Select */
+.existing-course-select {
+    background-color: #15151d !important;
+    color: #e5e7eb !important;
+    border: 1px solid #27272e;
+    border-radius: 8px;
+    color-scheme: dark;
+}
+
+.existing-course-select:focus {
+    background-color: #15151d !important;
+    color: #e5e7eb !important;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 0.2rem rgb(124 58 237 / 20%);
+}
+
+.existing-course-select:disabled {
+    background-color: #15151d !important;
+    color: #9ca3af !important;
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+.existing-course-select option {
+    background-color: #15151d;
+    color: #e5e7eb;
 }
